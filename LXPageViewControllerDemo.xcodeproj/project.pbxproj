@@ -11,7 +11,6 @@
 		0090A14B1E1470B60009ED07 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0090A13D1E1470B60009ED07 /* Assets.xcassets */; };
 		0090A14C1E1470B60009ED07 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0090A13E1E1470B60009ED07 /* LaunchScreen.storyboard */; };
 		0090A14D1E1470B60009ED07 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0090A1401E1470B60009ED07 /* Main.storyboard */; };
-		0090A14E1E1470B60009ED07 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0090A1421E1470B60009ED07 /* Info.plist */; };
 		0090A14F1E1470B60009ED07 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0090A1431E1470B60009ED07 /* main.m */; };
 		0090A1501E1470B60009ED07 /* NavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0090A1451E1470B60009ED07 /* NavigationController.m */; };
 		0090A1511E1470B60009ED07 /* TableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0090A1471E1470B60009ED07 /* TableViewController.m */; };
@@ -140,12 +139,12 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = LX;
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "从今以后";
 				TargetAttributes = {
 					00B806FF1E11B13F003E0F65 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 39XM8MX49W;
+						DevelopmentTeam = 6U2XW736FX;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -173,7 +172,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0090A14E1E1470B60009ED07 /* Info.plist in Resources */,
 				0090A14D1E1470B60009ED07 /* Main.storyboard in Resources */,
 				0090A14B1E1470B60009ED07 /* Assets.xcassets in Resources */,
 				0090A14C1E1470B60009ED07 /* LaunchScreen.storyboard in Resources */,
@@ -229,7 +227,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -237,7 +237,12 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -276,7 +281,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -284,7 +291,12 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -312,7 +324,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 39XM8MX49W;
+				DEVELOPMENT_TEAM = 6U2XW736FX;
 				INFOPLIST_FILE = "$(PROJECT)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -325,7 +337,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 39XM8MX49W;
+				DEVELOPMENT_TEAM = 6U2XW736FX;
 				INFOPLIST_FILE = "$(PROJECT)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
