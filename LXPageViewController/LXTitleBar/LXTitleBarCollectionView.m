@@ -20,7 +20,10 @@
 	self = [super initWithFrame:CGRectZero collectionViewLayout:layout];
 	if (self) {
 		_flowLayout = layout;
-		self.bounces = NO;
+        if (@available(iOS 11.0, *)) {
+            self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
+		self.alwaysBounceHorizontal = YES;
 		self.showsVerticalScrollIndicator = NO;
 		self.showsHorizontalScrollIndicator = NO;
 		self.backgroundColor = [UIColor clearColor];
@@ -29,8 +32,7 @@
 	return self;
 }
 
-- (void)setContentInset:(UIEdgeInsets)contentInset
-{
+- (void)setContentInset:(UIEdgeInsets)contentInset {
 	// 避免 UIViewController 的 automaticallyAdjustsScrollViewInsets 属性影响 contentInset 。
 }
 

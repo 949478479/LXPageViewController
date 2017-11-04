@@ -46,6 +46,7 @@
 
 - (void)_commonInit
 {
+	_sliderHeight = 1;
 	_titleScale = 1.1;
 	_titleInset = 10.0;
 	_scrollEnabled = YES;
@@ -321,6 +322,16 @@ willTransitionToViewControllers:(NSArray<UIViewController *> *)pendingViewContro
 	_titleBarBackgroundColor = titleBarBackgroundColor;
 
 	self.titleBar.backgroundColor = titleBarBackgroundColor;
+}
+
+- (void)setSliderHeight:(CGFloat)sliderHeight {
+	_sliderHeight = sliderHeight;
+	self.titleBar.sliderHeight = sliderHeight;
+}
+
+- (void)setSliderExtendedWidth:(CGFloat)sliderExtendedWidth {
+	_sliderExtendedWidth = sliderExtendedWidth;
+	self.titleBar.sliderExtendedWidth = sliderExtendedWidth;
 }
 
 #pragma mark - 页面添加

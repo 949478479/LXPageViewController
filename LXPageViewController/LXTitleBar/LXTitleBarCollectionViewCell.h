@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface LXTitleBarCollectionViewCell : UICollectionViewCell
 
 /// 取值范围 -1.0~1.0
@@ -27,3 +29,5 @@
 @property (nonatomic) UIColor *selectedTitleColor;
 
 @end
+
+NS_ASSUME_NONNULL_END

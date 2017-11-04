@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface LXTitleBar : UIView
 
 /// 标题字体，默认 15.0 系统字体
@@ -22,6 +24,11 @@
 /// 选中状态标题颜色，默认红色
 @property (nonatomic) IBInspectable UIColor *selectedTitleColor;
 
+/// 滑块高度，默认 1
+@property (nonatomic) IBInspectable CGFloat sliderHeight;
+/// 滑块延伸宽度，默认 0
+@property (nonatomic) IBInspectable CGFloat sliderExtendedWidth;
+
 /// 标题字符串数组
 @property (nonatomic, copy) NSArray<NSString *> *titles;
 /// 选中的标题
@@ -32,7 +39,7 @@
 /// 滑块向相邻标题滑动时的滑动进度，范围 -1.0~1.0，负数表示向左滑动，正数表示向右滑动
 @property (nonatomic) CGFloat slideProgress;
 /// 选中标题后调用
-@property (nonatomic, copy) void (^selectTitleHandler)(NSUInteger selectedIndex, NSString *selectedTitle);
+@property (nullable, nonatomic, copy) void (^selectTitleHandler)(NSUInteger selectedIndex, NSString *selectedTitle);
 
 /// 滚动动标题栏以致选中标题可见，无动画
 - (void)scrollSelectedTitleToVisible;
@@ -41,3 +48,5 @@
 - (void)selectTitleAtIndex:(NSUInteger)index animated:(BOOL)animated;
 
 @end
+
+NS_ASSUME_NONNULL_END

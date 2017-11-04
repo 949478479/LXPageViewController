@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface LXTitleBarCollectionView : UICollectionView
 
 /// cell 重用标识符
@@ -15,3 +17,5 @@
 @property (nonatomic, readonly) UICollectionViewFlowLayout *flowLayout;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -9,16 +9,13 @@
 #import "LXTitleBarCollectionView.h"
 #import "LXTitleBarCollectionViewCell.h"
 
-static CGFloat const LXSliderHeight = 2.0;
-static CGFloat const LXSliderWidthDelta = 4.0;
-
 @interface LXTitleBar () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic) BOOL isLayoutReloading;
 @property (nonatomic) BOOL isContentReloading;
 
 @property (nonatomic) NSArray *itemWidthCache;
-@property (nonatomic) NSArray *titleSizeCache;
+@property (nonatomic) NSArray *textSizeCache;
 
 @property (nonatomic) CGFloat previousContentOffsetX;
 @property (nonatomic) BOOL shouldRecordContentOffsetX;
@@ -52,6 +49,7 @@ static CGFloat const LXSliderWidthDelta = 4.0;
 
 - (void)_commonInit
 {
+	_sliderHeight = 1;
 	_titleScale = 1.1;
 	_titleInset = 10.0;
 	_minimumTitleSpacing = 15.0;
@@ -114,7 +112,7 @@ static CGFloat const LXSliderWidthDelta = 4.0;
 	cell.title = self.titles[indexPath.item];
 	cell.normalTitleColor = self.normalTitleColor;
 	cell.selectedTitleColor = self.selectedTitleColor;
-	cell.titleSize = [self.titleSizeCache[indexPath.item] CGSizeValue];
+	cell.titleSize = [self.textSizeCache[indexPath.item] CGSizeValue];
 	return cell;
 }
 
@@ -194,20 +192,20 @@ static CGFloat const LXSliderWidthDelta = 4.0;
 	self.isLayoutReloading = YES;
 
 	self.itemWidthCache = nil;
-	self.titleSizeCache = nil;
+	self.textSizeCache = nil;
 
-	[self.collectionView.collectionViewLayout invalidateLayout];
-
-	dispatch_async(dispatch_get_main_queue(), ^{
+	[UIView animateWithDuration:0 animations:^{
+		[self.collectionView.collectionViewLayout invalidateLayout];
+	} completion:^(BOOL finished) {
 		self.isLayoutReloading = NO;
-	});
+	}];
 }
 
 - (void)_computeAndCacheTitleAndItemSizeIfNeeded
 {
 	NSAssert(self.titles.count > 1, @"计算标题尺寸时标题数量必须大于1，titles：%@", self.titles);
 
-	if (self.titleSizeCache && self.itemWidthCache) {
+	if (self.textSizeCache && self.itemWidthCache) {
 		return;
 	}
 
@@ -242,7 +240,7 @@ static CGFloat const LXSliderWidthDelta = 4.0;
 		[itemWidthCache addObject:@(itemWidthArray[i])];
 	}
 
-	self.titleSizeCache = titleSizeCache;
+	self.textSizeCache = titleSizeCache;
 	self.itemWidthCache = itemWidthCache;
 }
 
@@ -286,12 +284,12 @@ static CGFloat const LXSliderWidthDelta = 4.0;
 	self.isContentReloading = YES;
 
 	[self _invalidateLayout];
-	[self.collectionView reloadData];
-
-	dispatch_async(dispatch_get_main_queue(), ^{
+	[UIView animateWithDuration:0 animations:^{
+		[self.collectionView reloadData];
+	} completion:^(BOOL finished) {
 		self.isContentReloading = NO;
 		[self _selectAndScrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.selectedIndex inSection:0] animated:NO];
-	});
+	}];
 }
 
 #pragma mark - 设置标题
@@ -402,10 +400,10 @@ static CGFloat const LXSliderWidthDelta = 4.0;
 	CGFloat progress = fabs(self.slideProgress);
 
 	self.slider.frame = ({
-		CGFloat currentWidth = [self.titleSizeCache[self.selectedIndex] CGSizeValue].width * self.titleScale + LXSliderWidthDelta;
+		CGFloat currentWidth = [self.textSizeCache[self.selectedIndex] CGSizeValue].width * self.titleScale + self.sliderExtendedWidth;
 		CGFloat targetWidth = currentWidth;
 		if (self.selectedIndex != targetIndex) {
-			targetWidth = [self.titleSizeCache[targetIndex] CGSizeValue].width * self.titleScale + LXSliderWidthDelta;
+			targetWidth = [self.textSizeCache[targetIndex] CGSizeValue].width * self.titleScale + self.sliderExtendedWidth;
 		}
 		CGRect frame = self.slider.frame;
 		frame.size.width = currentWidth + progress * (targetWidth - currentWidth);
@@ -461,15 +459,16 @@ static CGFloat const LXSliderWidthDelta = 4.0;
 		self.userInteractionEnabled = NO;
 	}
 
+	CGSize textSize = [self.textSizeCache[indexPath.item] CGSizeValue];
+	CGFloat sliderWidth = textSize.width * self.titleScale + self.sliderExtendedWidth;
 	CGFloat centerX = [self _layoutAttributesForItemAtIndex:indexPath.item].center.x;
-	CGFloat width = [self.titleSizeCache[indexPath.item] CGSizeValue].width * self.titleScale + LXSliderWidthDelta;
 
 	[UIView animateWithDuration:(animated ? 0.3 : 0.0) animations:^{
 		self.slider.frame = (CGRect){
 			0,
-			CGRectGetHeight(self.bounds) - LXSliderHeight,
-			width,
-			LXSliderHeight,
+			CGRectGetMidY(self.bounds) + textSize.height * self.titleScale * 0.5,
+			sliderWidth,
+			self.sliderHeight,
 		};
 		self.slider.center = ({
 			CGPoint center = self.slider.center;

@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface LXPageViewController : UIViewController
 
 /// 标题字体，默认为 15.0 系统字体
@@ -26,14 +28,19 @@
 /// 标题栏背景色，默认白色
 @property (nonatomic) IBInspectable UIColor *titleBarBackgroundColor;
 
+/// 滑块高度，默认 1
+@property (nonatomic) IBInspectable CGFloat sliderHeight;
+/// 滑块延伸宽度，默认 0
+@property (nonatomic) IBInspectable CGFloat sliderExtendedWidth;
+
 /// 页面是否可以滚动，默认可以
 @property (nonatomic) IBInspectable BOOL scrollEnabled;
 
-/// 选中页面标题
+/// 选中的页面标题
 @property (nonatomic, readonly) NSString *selectedTitle;
-/// 选中页面索引
+/// 选中的页面索引
 @property (nonatomic, readonly) NSUInteger selectedIndex;
-/// 选中页面视图控制器
+/// 选中的页面视图控制器
 @property (nonatomic, readonly) UIViewController *selectedViewController;
 
 /// 各页面所对应的标题
@@ -41,7 +48,7 @@
 /// 各页面所对应的视图控制器
 @property (nonatomic, readonly) NSArray<__kindof UIViewController *> *viewControllers;
 /// 选中标题后调用
-@property (nonatomic, copy) void (^selectTitleItemHandler)(NSUInteger index, NSString *title, UIViewController *vc);
+@property (nullable, nonatomic, copy) void (^selectTitleItemHandler)(NSUInteger index, NSString *title, UIViewController *vc);
 
 /// 添加视图控制器以及对应标题，先前添加的会被移除，默认选中第一个视图控制器
 - (void)addViewControllers:(NSArray<UIViewController *> *)viewControllers
@@ -50,6 +57,9 @@
 /// 滑动到指定索引对应的的页面，完成块会在动画完成时调用，若不指定动画则立即调用
 - (void)scrollToPageAtIndex:(NSUInteger)index
 				   animated:(BOOL)animated
-				 completion:(void (^)(void))completion;
+				 completion:(void (^_Nullable)(void))completion;
 
 @end
+
+NS_ASSUME_NONNULL_END
+
