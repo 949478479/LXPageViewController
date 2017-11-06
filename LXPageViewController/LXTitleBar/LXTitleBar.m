@@ -9,13 +9,55 @@
 #import "LXTitleBarCollectionView.h"
 #import "LXTitleBarCollectionViewCell.h"
 
+@implementation LXTitleBarConfiguration
+
+- (instancetype)init {
+	self = [super init];
+	if (self) {
+        [self _commonInit];
+	}
+	return self;
+}
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    [self _commonInit];
+}
+
+- (void)_commonInit
+{
+    _titleScale = 1.1;
+    _titleInset = 10.0;
+    _minimumTitleSpacing = 15.0;
+    _titleFont = [UIFont systemFontOfSize:15.0];
+
+    _selectedTitleColor = [UIColor redColor];
+    _normalTitleColor = [UIColor lightGrayColor];
+
+    _sliderHeight = 2;
+    _sliderExtendedWidth = 0;
+}
+
+@end
+
 @interface LXTitleBar () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+
+@property (nonatomic) UIFont *titleFont;
+@property (nonatomic) CGFloat titleScale;
+@property (nonatomic) CGFloat titleInset;
+@property (nonatomic) CGFloat minimumTitleSpacing;
+
+@property (nonatomic) UIColor *normalTitleColor;
+@property (nonatomic) UIColor *selectedTitleColor;
+
+@property (nonatomic) CGFloat sliderHeight;
+@property (nonatomic) CGFloat sliderExtendedWidth;
 
 @property (nonatomic) BOOL isLayoutReloading;
 @property (nonatomic) BOOL isContentReloading;
 
-@property (nonatomic) NSArray *itemWidthCache;
 @property (nonatomic) NSArray *textSizeCache;
+@property (nonatomic) NSArray *itemWidthCache;
 
 @property (nonatomic) CGFloat previousContentOffsetX;
 @property (nonatomic) BOOL shouldRecordContentOffsetX;
@@ -29,38 +71,56 @@
 
 #pragma mark - 构造方法
 
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)initWithConfiguration:(LXTitleBarConfiguration *)configuration
 {
-	self = [super initWithFrame:frame];
+	self = [super init];
 	if (self) {
+		_configuration = configuration;
 		[self _commonInit];
 	}
 	return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (void)awakeFromNib
 {
-	self = [super initWithCoder:coder];
-	if (self) {
-		[self _commonInit];
-	}
-	return self;
+	[super awakeFromNib];
+	[self _commonInit];
 }
 
 - (void)_commonInit
 {
-	_sliderHeight = 1;
-	_titleScale = 1.1;
-	_titleInset = 10.0;
-	_minimumTitleSpacing = 15.0;
+	NSParameterAssert(_configuration != nil);
+
+	if (!_configuration) {
+		return;
+	}
+	
+	_titleFont = _configuration.titleFont;
+	_titleScale = _configuration.titleScale;
+	_titleInset = _configuration.titleInset;
+	_minimumTitleSpacing = _configuration.minimumTitleSpacing;
+
+	_normalTitleColor = _configuration.normalTitleColor;
+	_selectedTitleColor = _configuration.selectedTitleColor;
+
+	_sliderHeight = _configuration.sliderHeight;
+	_sliderExtendedWidth = _configuration.sliderExtendedWidth;
+
 	_selectedIndex = NSNotFound;
 	_shouldRecordContentOffsetX = YES;
-	_selectedTitleColor = [UIColor redColor];
-	_titleFont = [UIFont systemFontOfSize:15.0];
-	_normalTitleColor = [UIColor lightGrayColor];
 
 	[self _setupCollectionView];
 	[self _setupSlider];
+}
+
+- (void)setConfiguration:(LXTitleBarConfiguration *)configuration
+{
+	NSParameterAssert(configuration != nil);
+	NSParameterAssert(_configuration == nil);
+
+	if (configuration && !_configuration) {
+		_configuration = configuration;
+	}
 }
 
 #pragma mark - 安装组件
@@ -73,7 +133,7 @@
 	collectionView.translatesAutoresizingMaskIntoConstraints = NO;
 	collectionView.flowLayout.sectionInset = (UIEdgeInsets){
 		0,
-		self.titleInset - self. minimumTitleSpacing / 2,
+		self.titleInset - self.minimumTitleSpacing / 2,
 		0,
 		self.titleInset - self.minimumTitleSpacing / 2,
 	};
@@ -94,13 +154,15 @@
 
 - (void)_setupSlider
 {
-	[self.collectionView addSubview:self.slider = [UIView new]];
+	UIView *slider = [UIView new];
+	slider.backgroundColor = self.selectedTitleColor;
+	self.slider = slider;
+	[self.collectionView addSubview:slider];
 }
 
-#pragma mark - <UICollectionViewDataSource>
+#pragma mark - UICollectionViewDataSource
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
 	return self.titles.count;
 }
 
@@ -116,7 +178,7 @@
 	return cell;
 }
 
-#pragma mark - <UICollectionViewDelegate>
+#pragma mark - UICollectionViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
@@ -128,14 +190,14 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
 	if (indexPath.item != self.selectedIndex) {
-		[self _selectTitleAtIndex:indexPath.item];
-		[self _scrollToItemAtIndexPath:indexPath animated:YES];
-		[self _scrollSliderToItemAtIndexPath:indexPath animated:NO];
-		!self.selectTitleHandler ?: self.selectTitleHandler(self.selectedIndex, self.selectedTitle);
+        [self _selectTitleAtIndex:indexPath.item];
+        [self _scrollToItemAtIndexPath:indexPath animated:YES];
+        [self _scrollSliderToItemAtIndexPath:indexPath animated:YES];
+        !self.selectTitleHandler ?: self.selectTitleHandler(self.selectedIndex, self.selectedTitle);
 	}
 }
 
-#pragma mark - <UICollectionViewDelegateFlowLayout>
+#pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView *)collectionView
 				  layout:(UICollectionViewLayout *)collectionViewLayout
@@ -154,52 +216,7 @@
 	return [self.collectionView.collectionViewLayout layoutAttributesForItemAtIndexPath:indexPath];
 }
 
-#pragma mark - 设置布局
-
-- (void)setTitleInset:(CGFloat)titleInset
-{
-	_titleInset = titleInset;
-
-	self.collectionView.flowLayout.sectionInset = (UIEdgeInsets){
-		0,
-		titleInset - self.minimumTitleSpacing / 2,
-		0,
-		titleInset - self.minimumTitleSpacing / 2,
-	};
-
-	[self _invalidateLayout];
-}
-
-- (void)setMinimumTitleSpacing:(CGFloat)minimumTitleSpacing
-{
-	_minimumTitleSpacing = minimumTitleSpacing;
-
-	self.collectionView.flowLayout.sectionInset = (UIEdgeInsets){
-		0,
-		self.titleInset - minimumTitleSpacing / 2,
-		0,
-		self.titleInset - minimumTitleSpacing / 2,
-	};
-
-	[self _invalidateLayout];
-}
-
-- (void)_invalidateLayout
-{
-	if (self.isLayoutReloading) {
-		return;
-	}
-	self.isLayoutReloading = YES;
-
-	self.itemWidthCache = nil;
-	self.textSizeCache = nil;
-
-	[UIView animateWithDuration:0 animations:^{
-		[self.collectionView.collectionViewLayout invalidateLayout];
-	} completion:^(BOOL finished) {
-		self.isLayoutReloading = NO;
-	}];
-}
+#pragma mark - 缓存标题尺寸
 
 - (void)_computeAndCacheTitleAndItemSizeIfNeeded
 {
@@ -244,79 +261,49 @@
 	self.itemWidthCache = itemWidthCache;
 }
 
-#pragma mark - 设置外观
-
-- (void)setTitleScale:(CGFloat)titleScale
-{
-	_titleScale = titleScale;
-
-	[self _reloadData];
-}
-
-- (void)setTitleFont:(UIFont *)titleFont
-{
-	_titleFont = titleFont;
-
-	[self _reloadData];
-}
-
-- (void)setNormalTitleColor:(UIColor *)normalTitleColor
-{
-	_normalTitleColor = normalTitleColor;
-
-	[self _reloadData];
-}
-
-- (void)setSelectedTitleColor:(UIColor *)selectedTitleColor
-{
-	_selectedTitleColor = selectedTitleColor;
-
-	self.slider.backgroundColor = selectedTitleColor;
-
-	[self _reloadData];
-}
+#pragma mark - 刷新数据
 
 - (void)_reloadData
 {
-	if (self.isContentReloading) {
-		return;
-	}
-	self.isContentReloading = YES;
+	self.textSizeCache = nil;
+	self.itemWidthCache = nil;
 
-	[self _invalidateLayout];
-	[UIView animateWithDuration:0 animations:^{
-		[self.collectionView reloadData];
-	} completion:^(BOOL finished) {
-		self.isContentReloading = NO;
-		[self _selectAndScrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.selectedIndex inSection:0] animated:NO];
-	}];
+    [UIView animateWithDuration:0 animations:^{
+        [self.collectionView reloadData];
+    } completion:^(BOOL finished) {
+        [self _selectAndScrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.selectedIndex inSection:0] animated:NO];
+    }];
 }
 
 #pragma mark - 设置标题
 
-- (void)setTitles:(NSArray<NSString *> *)titles
+- (void)setTitles:(NSArray<NSString *> *)titles selectedIndex:(NSInteger)index
 {
-	NSAssert(titles.count > 1, @"标题数量必须大于1，titles：%@", titles);
+    NSAssert(titles.count > 1, @"标题数量必须大于1，titles：%@", titles);
+    _titles = [titles valueForKey:@"copy"];
 
-	_titles = [titles valueForKey:@"copy"];
+    [self _selectTitleAtIndex:index];
+    [self _reloadData];
+}
 
-	[self _selectTitleAtIndex:0];
+#pragma mark - 选中并滑动标题
 
-	[self _reloadData];
+- (void)_selectAndScrollToItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated
+{
+    [self _selectItemAtIndexPath:indexPath animated:animated];
+    [self _scrollToItemAtIndexPath:indexPath animated:animated];
+    [self _scrollSliderToItemAtIndexPath:indexPath animated:animated];
 }
 
 #pragma mark - 选中标题
 
-- (void)selectTitleAtIndex:(NSUInteger)index animated:(BOOL)animated
+- (void)selectTitleAtIndex:(NSInteger)index animated:(BOOL)animated
 {
 	[self _selectTitleAtIndex:index];
-
-	if (self.collectionView.indexPathsForVisibleItems.count > 0) {
-		[self _selectAndScrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.selectedIndex inSection:0] animated:animated];
-	}
+	[self _selectAndScrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.selectedIndex inSection:0] animated:animated];
 }
 
-- (void)_selectTitleAtIndex:(NSUInteger)index
+- (void)_selectTitleAtIndex:(NSInteger)index
 {
 	NSAssert(index < self.titles.count, @"选中标题项时索引越界，index：%@", @(index));
 
@@ -327,16 +314,8 @@
 	_selectedTitle = self.titles[index];
 }
 
-- (void)_selectItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated
-{
-	[self.collectionView selectItemAtIndexPath:indexPath animated:animated scrollPosition:UICollectionViewScrollPositionNone];
-}
-
-- (void)_selectAndScrollToItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated
-{
-	[self _selectItemAtIndexPath:indexPath animated:animated];
-	[self _scrollToItemAtIndexPath:indexPath animated:animated];
-	[self _scrollSliderToItemAtIndexPath:indexPath animated:animated];
+- (void)_selectItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
+    [self.collectionView selectItemAtIndexPath:indexPath animated:animated scrollPosition:UICollectionViewScrollPositionNone];
 }
 
 #pragma mark - 滑动标题
@@ -442,23 +421,28 @@
 	}
 }
 
-- (void)scrollSelectedTitleToVisible
+- (void)scrollSelectedItemToVisible
 {
-	NSIndexPath *indexPath = [NSIndexPath indexPathForItem:self.selectedIndex inSection:0];
-	[self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:self.selectedIndex inSection:0];
+    UICollectionViewLayoutAttributes *layoutAttributes = [self _layoutAttributesForItemAtIndex:self.selectedIndex];
+    if (CGRectIntersectsRect(self.collectionView.bounds, layoutAttributes.frame)) {
+        [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+    } else {
+        [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+    }
 }
 
-- (void)_scrollToItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated
-{
-	[self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:animated];
+- (void)scrollSelectedItemToCenter {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:self.selectedIndex inSection:0];
+    [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+}
+
+- (void)_scrollToItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
+	[self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:animated];
 }
 
 - (void)_scrollSliderToItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated
 {
-	if (animated) {
-		self.userInteractionEnabled = NO;
-	}
-
 	CGSize textSize = [self.textSizeCache[indexPath.item] CGSizeValue];
 	CGFloat sliderWidth = textSize.width * self.titleScale + self.sliderExtendedWidth;
 	CGFloat centerX = [self _layoutAttributesForItemAtIndex:indexPath.item].center.x;
@@ -475,8 +459,6 @@
 			center.x = centerX;
 			center;
 		});
-	} completion:^(BOOL finished) {
-		self.userInteractionEnabled = YES;
 	}];
 }
 
